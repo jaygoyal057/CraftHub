@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout - Payment</title>
+    <!-- Add Font Awesome for better icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f7f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f7f9fa 0%, #e3e8ec 100%);
+        }
+        .billing-container {
+            width: 75%;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        h2 {
+            color: #004b5b;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+        h2:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #004b5b;
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+        .payment-section {
+            margin: 30px 0;
+        }
+        .payment-option {
+            border: 1px solid #e0e0e0;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        .payment-option:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+        }
+        .payment-option.selected {
+            border: 2px solid #004b5b;
+            background: linear-gradient(to right, #f8f9fa, #ffffff);
+        }
+        .payment-option h4 {
+            color: #2c3e50;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .payment-details {
+            margin-top: 20px;
+            display: none;
+            animation: slideDown 0.3s ease;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .active {
+            display: block;
+        }
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 12px;
+            margin: 8px 0;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+        input[type="text"]:focus, input[type="number"]:focus, select:focus {
+            outline: none;
+            border-color: #004b5b;
+            box-shadow: 0 0 0 2px rgba(0,75,91,0.1);
+        }
+        .pay-button {
+            background: linear-gradient(135deg, #004b5b 0%, #006d87 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .pay-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,75,91,0.2);
+        }
+        .order-summary {
+            background: linear-gradient(135deg, #f8f9fa 0%, #f1f3f4 100%);
+            padding: 25px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border: 1px solid #e0e0e0;
+        }
+        .order-summary h3 {
+            color: #2c3e50;
+            margin-top: 0;
+        }
+        .total-amount {
+            font-size: 24px;
+            color: #004b5b;
+            font-weight: bold;
+        }
+        .card-input-wrapper {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 10px;
+        }
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            color: #28a745;
+            font-size: 14px;
+            margin-top: 15px;
+        }
+        /* Payment method icons */
+        .payment-icon {
+            font-size: 20px;
+            margin-right: 10px;
+            color: #004b5b;
+        }
+    </style>
+</head>
+<body>
+    <div class="billing-container">
+        <h2>Secure Checkout</h2>
+        
+        <div class="order-summary">
+            <h3>Order Summary</h3>
+            <p>Total Amount: <span id="total-amount" class="total-amount">0</span> INR</p>
+        </div>
+
+        <div class="payment-section">
+            <h3>Select Payment Method</h3>
+            
+            <div class="payment-option" onclick="selectPayment('card')">
+                <h4>
+                    <i class="fas fa-credit-card payment-icon"></i>
+                    Credit/Debit Card
+                </h4>
+                <div id="card-details" class="payment-details">
+                    <input type="text" placeholder="Card Number" maxlength="16">
+                    <input type="text" placeholder="Card Holder Name">
+                    <div class="card-input-wrapper">
+                        <input type="text" placeholder="MM/YY" maxlength="5">
+                        <input type="number" placeholder="CVV" maxlength="3">
+                    </div>
+                    <div class="secure-badge">
+                        <i class="fas fa-lock"></i>
+                        Your payment is secure with SSL encryption
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('upi')">
+                <h4>
+                    <i class="fas fa-mobile-alt payment-icon"></i>
+                    UPI Payment
+                </h4>
+                <div id="upi-details" class="payment-details">
+                    <input type="text" placeholder="Enter UPI ID (e.g., name@upi)">
+                    <div class="secure-badge">
+                        <i class="fas fa-shield-alt"></i>
+                        Instant and secure UPI transfer
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-option" onclick="selectPayment('netbanking')">
+                <h4>
+                    <i class="fas fa-university payment-icon"></i>
+                    Net Banking
+                </h4>
+                <div id="netbanking-details" class="payment-details">
+                    <select>
+                        <option value="">Select Your Bank</option>
+                        <option value="sbi">State Bank of India</option>
+                        <option value="hdfc">HDFC Bank</option>
+                        <option value="icici">ICICI Bank</option>
+                        <option value="axis">Axis Bank</option>
+                        <option value="kotak">Kotak Mahindra Bank</option>
+                    </select>
+                    <div class="secure-badge">
+                        <i class="fas fa-lock"></i>
+                        Secure net banking gateway
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <button class="pay-button" onclick="processPayment()">
+            <i class="fas fa-lock"></i> Pay Securely Now
+        </button>
+    </div>
+
+    <script>
+        // Add this at the start of your billing.html script
+        window.onload = function() {
+            // Check if address is selected
+            const selectedAddress = localStorage.getItem('selectedAddress');
+            if (!selectedAddress) {
+                alert('Please select a delivery address first');
+                window.location.href = 'address.html';
+                return;
+            }
+
+            // Rest of your existing onload code...
+            const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+            let total = 0;
+            cartItems.forEach(item => {
+                total += item.price * item.quantity;
+            });
+            document.getElementById('total-amount').innerText = total;
+        }
+
+        function selectPayment(method) {
+            // Hide all payment details
+            document.querySelectorAll('.payment-details').forEach(detail => {
+                detail.classList.remove('active');
+            });
+            document.querySelectorAll('.payment-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+
+            // Show selected payment details
+            document.getElementById(`${method}-details`).classList.add('active');
+            document.getElementById(`${method}-details`).parentElement.classList.add('selected');
+        }
+
+        function processPayment() {
+            // Basic validation
+            const selectedMethod = document.querySelector('.payment-option.selected');
+            if (!selectedMethod) {
+                alert('Please select a payment method');
+                return;
+            }
+
+            // In real application, you would integrate with payment gateway here
+            alert('Payment processing... This is a demo.');
+            // After successful payment
+            localStorage.removeItem('cartItems'); // Clear cart
+            window.location.href = 'order-confirmation.html'; // Redirect to confirmation page
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CraftHub - Local Artisan Support</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f7f9fa;
+            color: #333;
+        }
+
+        /* Header Styles */
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 20px;
+            background-color: #004b5b; /* Deep Blue */
+            color: #f1f1f1;
+        }
+        .logo {
+            font-size: 40px;
+            font-weight: bold;
+            color: #f2a115; /* Coral */
+        }
+        .search-bar {
+            display: flex;
+        }
+        .search-bar input[type="text"] {
+            width: 300px;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px 0 0 4px;
+        }
+        .search-bar button {
+            padding: 8px 16px;
+            border: none;
+            background-color: #ffd166; /* Soft Yellow */
+            color: #004b5b;
+            cursor: pointer;
+            border-radius: 0 4px 4px 0;
+        }
+        nav ul {
+            list-style: none;
+            display: flex;
+            gap: 15px;
+        }
+        nav ul li {
+            position: relative; /* For dropdown positioning */
+        }
+        nav ul li a {
+            color: #f1f1f1;
+            text-decoration: none;
+        }
+
+        /* Dropdown Styles */
+        .dropdown {
+            display: none; /* Hidden by default */
+            position: absolute;
+            background-color: #f1f7f8; /* Light Teal */
+            min-width: 160px;
+            z-index: 1;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .dropdown a {
+            color: #004b5b;
+            padding: 12px 16px;
+            text-decoration: none;
+            display: block;
+        }
+        .dropdown a:hover {
+            background-color: #ddd; /* Light gray on hover */
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 200px;
+            padding: 20px;
+            background-color: #f1f7f8; /* Light Teal */
+            position: fixed;
+            top: 60px;
+            left: 0;
+            height: 100%;
+        }
+        .filter-category, .filter-price, .filter-rating {
+            margin-bottom: 20px;
+        }
+        .filter-category ul, .filter-rating ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        /* Main Content */
+        .content {
+            margin-left: 220px;
+            padding: 20px;
+        }
+        .hero {
+            text-align: center;
+            padding: 40px;
+            background-color: #ffd166;
+            color: #004b5b;
+        }
+        .hero h1 {
+            margin: 0;
+        }
+        .product-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .product-card {
+            width: 200px;
+            padding: 16px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .product-card img {
+            width: 100%;
+            border-radius: 4px;
+        }
+        .product-card .btn {
+            margin-top: 10px;
+            padding: 8px;
+            background-color: #ff6b6b; /* Coral */
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            border-radius: 4px;
+        }
+
+        /* Footer Styles */
+        footer {
+            text-align: center;
+            padding: 20px;
+            background-color: #004b5b;
+            color: #f1f1f1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" id="logoText">CraftHub</div>
+        <div class="search-bar">
+            <input type="text" placeholder="Search for products..." id="searchInput">
+            <button class="btn" onclick="searchProducts()">Search</button>
+        </div>
+        <nav>
+            <ul>
+                <li>
+                    <a href="#" onclick="toggleDropdown('departmentsDropdown')">All Departments</a>
+                    <div class="dropdown" id="departmentsDropdown">
+                        <a href="#">Art</a>
+                        <a href="#">Jewelry</a>
+                        <a href="#">Apparel</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" onclick="toggleDropdown('dealsDropdown')">Deals</a>
+                    <div class="dropdown" id="dealsDropdown">
+                        <a href="#">Today's Deals</a>
+                        <a href="#">Weekly Specials</a>
+                    </div>
+                </li>
+                <li>
+                    <a href="#" onclick="toggleDropdown('customerServiceDropdown')">Customer Service</a>
+                    <div class="dropdown" id="customerServiceDropdown">
+                        <a href="#">Contact Us</a>
+                        <a href="#">FAQs</a>
+                    </div>
+                </li>
+                <li><a href="cart.html">Cart</a></li>
+                <li>
+                    <select id="languageSelector" onchange="changeLanguage()">
+                        <option value="en">English</option>
+                        <option value="hi">हिन्दी</option>
+                    </select>
+                </li>
+            </ul>
+        </nav>
+    </header>
+
+    <aside class="sidebar">
+        <h3 id="filterByTitle">Filter by</h3>
+        <div class="filter-category">
+            <h4 id="categoryTitle">Category</h4>
+            <ul>
+                <li><input type="checkbox"> Art</li>
+                <li><input type="checkbox"> Jewelry</li>
+                <li><input type="checkbox"> Apparel</li>
+            </ul>
+        </div>
+        <div class="filter-price">
+            <h4 id="priceRangeTitle">Price Range</h4>
+            <input type="range" min="150" max="10000" step="10" value="150" id="priceRange" oninput="updatePriceRange()">
+            <p id="priceRangeValue">₹150 - ₹10,000</p>
+        </div>
+        <div class="filter-rating">
+            <h4 id="customerRatingTitle">Customer Rating</h4>
+            <ul>
+                <li><input type="checkbox"> 4 stars & up</li>
+                <li><input type="checkbox"> 3 stars & up</li>
+            </ul>
+        </div>
+    </aside>
+
+    <div class="content">
+        <section class="hero">
+            <h1 id="heroTitle">Support Local Artisans</h1>
+            <p id="heroDescription">Discover unique handmade products and stories from talented artisans.</p>
+            <a href="#products" class="btn" id="shopNowBtn">Shop Now</a>
+        </section>
+
+        <section id="products" class="product-grid">
+            <div class="product-card">
+                <img src="https://gaatha.com/wp-content/uploads/2020/10/seopur-craft-history.jpg" alt=" lacquerware Cannon">
+                <h3 id="product1Name">lacquerware Cannon</h3>
+                <p id="product1Price">₹1000</p>
+                <p>★★★★☆</p>
+                <button class="btn" onclick="addToCart('lacquerware Cannon', 1000)" id="addToCartBtn1">Add to Cart</button>
+            </div>
+            
+            <div class="product-card">
+                <img src="https://c9admin.cottage9.com/uploads/2434/Metal-Art-In-Modern-India-q4gpzor30wwm6kntlyhwranxcrugl8f1eqbhdtd4aw.jpg" alt="Natraj Brass Idol">
+                <h3 id="product2Name">Natraj Brass Idol </h3>
+                <p id="product2Price">₹850.50</p>
+                <p>★★★★☆</p>
+                <button class="btn" onclick="addToCart('Natraj Brass Idol', 850.50)" id="addToCartBtn2">Add to Cart</button>
+            </div>
+            
+        </section>
+    </div>
+
+    <footer>
+        <p>&copy; 2024 CraftHub. All rights reserved.</p>
+    </footer>
+
+    <script>
+        const translations = {
+            en: {
+                logo: "CraftHub",
+                allDepartments: "All Departments",
+                deals: "Deals",
+                customerService: "Customer Service",
+                cart: "Cart",
+                heroTitle: "Support Local Artisans",
+                heroDescription: "Discover unique handmade products and stories from talented artisans.",
+                shopNow: "Shop Now",
+                filterBy: "Filter by",
+                category: "Category",
+                priceRange: "Price Range",
+                customerRating: "Customer Rating",
+            },
+            hi: {
+                logo: "क्राफ्टहब",
+                allDepartments: "सभी विभाग",
+                deals: "डील्स",
+                customerService: "ग्राहक सेवा",
+                cart: "कार्ट",
+                heroTitle: "स्थानीय शिल्पकारों का समर्थन करें",
+                heroDescription: "प्रतिभाशाली शिल्पकारों से अनोखे हस्तनिर्मित उत्पाद और कहानियां खोजें।",
+                shopNow: "अभी खरीदें",
+                filterBy: "फिल्टर करें",
+                category: "श्रेणी",
+                priceRange: "मूल्य सीमा",
+                customerRating: "ग्राहक रेटिंग",
+            }
+        };
+
+        function changeLanguage() {
+            const lang = document.getElementById("languageSelector").value;
+            const translation = translations[lang];
+
+            document.getElementById("logoText").textContent = translation.logo;
+            document.querySelector('nav a[href="#"]').textContent = translation.allDepartments;
+            document.querySelector('nav a[href="#dealsDropdown"]').textContent = translation.deals;
+            document.querySelector('nav a[href="#customerServiceDropdown"]').textContent = translation.customerService;
+            document.getElementById("cartLink").textContent = translation.cart;
+            document.getElementById("heroTitle").textContent = translation.heroTitle;
+            document.getElementById("heroDescription").textContent = translation.heroDescription;
+            document.getElementById("shopNowBtn").textContent = translation.shopNow;
+            document.getElementById("filterByTitle").textContent = translation.filterBy;
+            document.getElementById("categoryTitle").textContent = translation.category;
+            document.getElementById("priceRangeTitle").textContent = translation.priceRange;
+            document.getElementById("customerRatingTitle").textContent = translation.customerRating;
+        }
+
+        function toggleDropdown(dropdownId) {
+            const dropdown = document.getElementById(dropdownId);
+            dropdown.style.display = dropdown.style.display === "block" ? "none" : "block";
+        }
+
+        function searchProducts() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const products = document.querySelectorAll(".product-card");
+            products.forEach(product => {
+                const productName = product.querySelector("h3").textContent.toLowerCase();
+                product.style.display = productName.includes(query) ? "block" : "none";
+            });
+        }
+
+        function updatePriceRange() {
+            const priceRange = document.getElementById("priceRange").value;
+            document.getElementById("priceRangeValue").textContent = `₹150 - ₹${priceRange}`;
+        }
+
+        function addToCart(productName, productPrice) {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+            cart.push({ productName, productPrice });
+            localStorage.setItem("cart", JSON.stringify(cart));
+            alert(`${productName} added to cart!`);
+        }
+    </script>
+</body>
+</html>

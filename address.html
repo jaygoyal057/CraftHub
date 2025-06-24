@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Shipping Address - Checkout</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #f7f9fa;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #f7f9fa 0%, #e3e8ec 100%);
+        }
+
+        .address-container {
+            width: 75%;
+            margin: 20px auto;
+            padding: 30px;
+            background-color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+
+        .checkout-steps {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 30px;
+        }
+
+        .step {
+            display: flex;
+            align-items: center;
+            margin: 0 15px;
+            color: #888;
+        }
+
+        .step.active {
+            color: #004b5b;
+            font-weight: bold;
+        }
+
+        .step-number {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            background-color: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+        }
+
+        .step.active .step-number {
+            background-color: #004b5b;
+            color: white;
+        }
+
+        h2 {
+            color: #004b5b;
+            text-align: center;
+            font-size: 28px;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        h2:after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 3px;
+            background: #004b5b;
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #004b5b;
+            box-shadow: 0 0 0 2px rgba(0,75,91,0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .saved-addresses {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+
+        .address-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .address-card:hover {
+            border-color: #004b5b;
+            background: #fff;
+            transform: translateY(-2px);
+        }
+
+        .address-card.selected {
+            border: 2px solid #004b5b;
+            background: #fff;
+        }
+
+        .continue-btn {
+            background: linear-gradient(135deg, #004b5b 0%, #006d87 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 20px;
+        }
+
+        .continue-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,75,91,0.2);
+        }
+
+        .add-new-address {
+            margin-top: 20px;
+            padding: 20px;
+            border: 2px dashed #ddd;
+            border-radius: 8px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-new-address:hover {
+            border-color: #004b5b;
+            color: #004b5b;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="address-container">
+        <!-- Checkout Steps -->
+        <div class="checkout-steps">
+            <div class="step active">
+                <div class="step-number">1</div>
+                <span>Address</span>
+            </div>
+            <div class="step">
+                <div class="step-number">2</div>
+                <span>Payment</span>
+            </div>
+            <div class="step">
+                <div class="step-number">3</div>
+                <span>Confirmation</span>
+            </div>
+        </div>
+
+        <h2>Shipping Address</h2>
+
+        <!-- Saved Addresses Section -->
+        <div class="saved-addresses">
+            <h3>Saved Addresses</h3>
+            <div class="address-card selected">
+                <strong>Home</strong>
+                <p>John Doe<br>
+                123 Main Street, Apartment 4B<br>
+                Mumbai, Maharashtra - 400001<br>
+                Phone: +91 98765 43210</p>
+            </div>
+            <div class="address-card">
+                <strong>Office</strong>
+                <p>John Doe<br>
+                456 Business Park, Tower C<br>
+                Mumbai, Maharashtra - 400051<br>
+                Phone: +91 98765 43211</p>
+            </div>
+        </div>
+
+        <!-- New Address Form -->
+        <div class="add-new-address" id="showNewAddressForm">
+            <i class="fas fa-plus"></i> Add New Address
+        </div>
+
+        <form id="addressForm" style="display: none;">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="fullName">Full Name</label>
+                    <input type="text" id="fullName" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="pincode">Pincode</label>
+                    <input type="text" id="pincode" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="state">State</label>
+                    <select id="state" required>
+                        <option value="">Select State</option>
+                        <option value="MH">Maharashtra</option>
+                        <option value="DL">Delhi</option>
+                        <option value="KA">Karnataka</option>
+                        <!-- Add more states -->
+                    </select>
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="address">Street Address</label>
+                    <textarea id="address" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="landmark">Landmark (Optional)</label>
+                    <input type="text" id="landmark">
+                </div>
+
+                <div class="form-group full-width">
+                    <label>Address Type</label>
+                    <div style="display: flex; gap: 20px;">
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="radio" name="addressType" value="home">
+                            <span style="margin-left: 8px;">Home</span>
+                        </label>
+                        <label style="display: inline-flex; align-items: center;">
+                            <input type="radio" name="addressType" value="office">
+                            <span style="margin-left: 8px;">Office</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <button class="continue-btn" onclick="proceedToPayment()">
+            Continue to Payment <i class="fas fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <script>
+        document.getElementById('showNewAddressForm').addEventListener('click', function() {
+            const form = document.getElementById('addressForm');
+            form.style.display = form.style.display === 'none' ? 'block' : 'none';
+            this.style.display = 'none';
+        });
+
+        // Handle address card selection
+        document.querySelectorAll('.address-card').forEach(card => {
+            card.addEventListener('click', function() {
+                document.querySelectorAll('.address-card').forEach(c => c.classList.remove('selected'));
+                this.classList.add('selected');
+            });
+        });
+
+        function proceedToPayment() {
+            // Check if new address form is visible and filled
+            const addressForm = document.getElementById('addressForm');
+            if (addressForm.style.display === 'block') {
+                // Validate new address form
+                const requiredFields = addressForm.querySelectorAll('[required]');
+                let isValid = true;
+                
+                requiredFields.forEach(field => {
+                    if (!field.value.trim()) {
+                        isValid = false;
+                        field.style.borderColor = 'red';
+                    } else {
+                        field.style.borderColor = '#ddd';
+                    }
+                });
+
+                if (!isValid) {
+                    alert('Please fill all required fields');
+                    return;
+                }
+
+                // If form is valid, create new address object
+                const newAddress = {
+                    name: document.getElementById('fullName').value,
+                    phone: document.getElementById('phone').value,
+                    pincode: document.getElementById('pincode').value,
+                    state: document.getElementById('state').value,
+                    address: document.getElementById('address').value,
+                    city: document.getElementById('city').value,
+                    landmark: document.getElementById('landmark').value,
+                    type: document.querySelector('input[name="addressType"]:checked')?.value || 'home'
+                };
+
+                // Save new address to localStorage
+                const savedAddresses = JSON.parse(localStorage.getItem('savedAddresses') || '[]');
+                savedAddresses.push(newAddress);
+                localStorage.setItem('savedAddresses', JSON.stringify(savedAddresses));
+                localStorage.setItem('selectedAddress', JSON.stringify(newAddress));
+            } else {
+                // If using saved address, get the selected one
+                const selectedAddress = document.querySelector('.address-card.selected');
+                if (!selectedAddress) {
+                    alert('Please select a delivery address or add a new one');
+                    return;
+                }
+                
+                // Save selected address to localStorage
+                localStorage.setItem('selectedAddress', selectedAddress.innerText);
+            }
+
+            // Show confirmation dialog
+            const confirmDialog = confirm('Confirm delivery address and proceed to payment?');
+            if (confirmDialog) {
+                // Redirect to billing page
+                window.location.href = 'billing.html';
+            }
+        }
+
+        // Add this function to validate phone number
+        function validatePhone(input) {
+            const phoneRegex = /^[0-9]{10}$/;
+            if (!phoneRegex.test(input.value)) {
+                input.setCustomValidity('Please enter a valid 10-digit phone number');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
+        // Add this function to validate pincode
+        function validatePincode(input) {
+            const pincodeRegex = /^[0-9]{6}$/;
+            if (!pincodeRegex.test(input.value)) {
+                input.setCustomValidity('Please enter a valid 6-digit pincode');
+            } else {
+                input.setCustomValidity('');
+            }
+        }
+
+        // Add these event listeners to the form
+        document.addEventListener('DOMContentLoaded', function() {
+            const phoneInput = document.getElementById('phone');
+            const pincodeInput = document.getElementById('pincode');
+
+            phoneInput.addEventListener('input', () => validatePhone(phoneInput));
+            pincodeInput.addEventListener('input', () => validatePincode(pincodeInput));
+        });
+    </script>
+</body>
+</html>

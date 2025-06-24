@@ -1,0 +1,144 @@
+<!-- cart.html -->
+<div class="cart-container">
+    <h2>Your Cart</h2>
+    <div id="cart-items">
+        <!-- Cart items will be dynamically added here -->
+    </div>
+    <div class="cart-summary">
+        <h3>Total: <span id="total-price">0</span> INR</h3>
+        <button id="checkout-button">Checkout</button>
+        <a href="home.html" class="back-home">Back to Home</a>
+    </div>
+</div>
+
+<script>
+    function renderCart() {
+        const cartContainer = document.getElementById('cart-items');
+        cartContainer.innerHTML = '';
+        let total = 0;
+
+        // Retrieve cart items from local storage
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+
+        cartItems.forEach(item => {
+            const itemTotal = item.price * item.quantity; // Calculate total for the item
+            total += itemTotal; // Add to overall total
+            cartContainer.innerHTML += `
+                <div class="cart-item">
+                    <div class="item-details">
+                        <span class="item-name">${item.name}</span>
+                        <span class="item-price">${item.price} INR</span>
+                        <input type="number" value="${item.quantity}" min="1" onchange="updateQuantity('${item.name}', this.value)" class="quantity-input">
+                        <span class="item-total">Total: ${itemTotal} INR</span>
+                        <button onclick="removeItem('${item.name}')" class="remove-button">Remove</button>
+                    </div>
+                </div>
+            `;
+        });
+
+        document.getElementById('total-price').innerText = total; // Update total price
+    }
+
+    function updateQuantity(name, quantity) {
+        const cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        const item = cartItems.find(item => item.name === name);
+        if (item) {
+            item.quantity = parseInt(quantity);
+            localStorage.setItem('cartItems', JSON.stringify(cartItems));
+            renderCart(); // Re-render the cart to update total price
+        }
+    }
+
+    function removeItem(name) {
+        let cartItems = JSON.parse(localStorage.getItem('cartItems')) || [];
+        cartItems = cartItems.filter(item => item.name !== name);
+        localStorage.setItem('cartItems', JSON.stringify(cartItems));
+        renderCart(); // Re-render the cart
+    }
+
+    document.getElementById('checkout-button').addEventListener('click', () => {
+        window.location.href = 'address.html';
+    });
+
+    // Initial render
+    renderCart();
+</script>
+
+<style>
+    body {
+        background-color: #f7f9fa; /* Home page background color */
+    }
+    .cart-container {
+        width: 60%;
+        margin: auto;
+        border: 1px solid #ccc;
+        padding: 20px;
+        border-radius: 5px;
+        background-color: #fff; /* White background for cart */
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+    h2 {
+        text-align: center;
+        color: #004b5b; /* Deep Blue */
+    }
+    .cart-item {
+        display: flex;
+        align-items: center;
+        margin: 10px 0;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        background-color: #fff; /* White background for items */
+        transition: background-color 0.3s;
+    }
+    .cart-item:hover {
+        background-color: #eaeaea; /* Darker gray on hover */
+    }
+    .item-details {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        align-items: center;
+    }
+    .item-name {
+        font-weight: bold;
+        color: #004b5b; /* Deep Blue */
+    }
+    .item-price {
+        margin-right: 10px;
+        color: #004b5b; /* Deep Blue */
+    }
+    .quantity-input {
+        width: 50px;
+        margin-right: 10px;
+    }
+    .remove-button {
+        background-color: #ff6b6b; /* Coral */
+        color: white;
+        border: none;
+        padding: 5px 10px;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .remove-button:hover {
+        background-color: #ff4c4c; /* Darker coral on hover */
+    }
+    .cart-summary {
+        margin-top: 20px;
+        font-weight: bold;
+        text-align: center;
+        color: #004b5b; /* Deep Blue */
+    }
+    .back-home {
+        display: inline-block;
+        margin-top: 20px;
+        padding: 10px 15px;
+        background-color: #004b5b; /* Deep Blue */
+        color: #f1f1f1;
+        text-decoration: none;
+        border-radius: 5px;
+    }
+    .back-home:hover {
+        background-color: #003040; /* Darker shade on hover */
+    }
+</style>
